@@ -2,58 +2,64 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/Feinot/metric/cmd/server/Forms"
+	"github.com/Feinot/metric/cmd/server/storage"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
-
-var storage Forms.MemStorage
 
 type Metric Forms.Metric
 
 var m Metric
 
-func HandleGuage(w http.ResponseWriter) {
-	if m.MetricName == "" {
-		http.Error(w, "", 404)
-		return
-	}
-	storage.Guage = m.MetricValue
-	http.Error(w, "", 200)
-
-}
-func HandleCaunter(w http.ResponseWriter) {
-	if m.MetricName == "" {
-		http.Error(w, "", 404)
-		return
-	}
-	s := make(map[string][]interface{})
-	s[m.MetricName] = append(storage.Counter[m.MetricName], m.MetricValue)
-	storage.Counter = s
-	http.Error(w, "", 200)
-}
-
-func RequestHandle(w http.ResponseWriter, r *http.Request) {
-
+func HandleGuage(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "", 400)
-		//fmt.Fprintf(w, "err %q\n", err, err.Error())
 
 	} else {
 		err = json.Unmarshal(body, &m)
 		if err != nil {
-			fmt.Println(err.Error())
+
+			http.Error(w, "", http.StatusBadRequest)
+		}
+	}
+	if m.MetricName == "" && m.MetricType != "guage" {
+		http.Error(w, "gu", 404)
+
+		return
+	}
+	storage.Storage.Guage[m.MetricName] = m.MetricValue
+
+	http.Error(w, "gu", 200)
+
+}
+func HandleCaunter(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "", 400)
+		return
+
+	} else {
+		err = json.Unmarshal(body, &m)
+		if err != nil {
+			http.Error(w, "", http.StatusBadRequest)
 
 		}
 	}
-	switch m.MetricType {
-	case "gauge":
-		HandleGuage(w)
-	case "counter":
-		HandleCaunter(w)
-	default:
+
+	if m.MetricName == "" && m.MetricType != "caunter" {
 		http.Error(w, "", 400)
+
+		return
 	}
+	s := make(map[time.Time][]map[string][]Forms.Monitor)
+	q := make(map[string][]Forms.Monitor)
+	q[m.MetricName] = append(q[m.MetricName], m.MetricValue)
+
+	s[time.Now()] = append(storage.Storage.Counter[time.Now()], q)
+	storage.Storage.Counter = s
+
+	http.Error(w, "", 200)
 }

@@ -83,7 +83,7 @@ func TestMetric_HandleCaunter(t *testing.T) {
 			request := httptest.NewRequest(test.want.requestType, test.want.url, test.want.metric)
 
 			w := httptest.NewRecorder()
-			RequestHandle(w, request)
+			HandleCaunter(w, request)
 
 			res := w.Result()
 
