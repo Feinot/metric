@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Feinot/metric/cmd/server/Forms"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -36,7 +36,7 @@ func HandleCaunter(w http.ResponseWriter) {
 
 func RequestHandle(w http.ResponseWriter, r *http.Request) {
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "", 400)
 		//fmt.Fprintf(w, "err %q\n", err, err.Error())
