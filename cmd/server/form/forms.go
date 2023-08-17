@@ -1,4 +1,4 @@
-package forms
+package form
 
 type Metric struct {
 	MetricType  string `json:"MetricType"`

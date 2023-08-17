@@ -3,14 +3,14 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Feinot/metric/cmd/server/forms"
+	"github.com/Feinot/metric/cmd/server/form"
 	"io"
 	"net/http"
 )
 
-var storage forms.MemStorage
+var storage form.MemStorage
 
-type Metric forms.Metric
+type Metric form.Metric
 
 var m Metric
 
