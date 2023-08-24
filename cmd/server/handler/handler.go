@@ -66,5 +66,6 @@ func RequestHandle(w http.ResponseWriter, r *http.Request) {
 	default:
 
 		http.Error(w, "", 400)
+		return
 	}
 }
