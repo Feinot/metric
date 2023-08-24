@@ -42,9 +42,8 @@ func RequestHandle(w http.ResponseWriter, r *http.Request) {
 	url := strings.Split(r.URL.Path, "/update/")
 	url = strings.Split(url[1], "/")
 	fmt.Println(url)
-	for q := 0; q < len(url); q++ {
-		arr[q] = url[q]
-	}
+	sa := copy(arr, url)
+	fmt.Println(sa)
 	m.MetricType = arr[0]
 	m.MetricName = arr[1]
 
