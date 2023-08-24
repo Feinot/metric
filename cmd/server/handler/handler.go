@@ -16,7 +16,7 @@ var m Metric
 
 func HandleGuage(w http.ResponseWriter) {
 	if m.MetricName == "" {
-		http.Error(w, "", 400)
+		http.Error(w, "", http.StatusNotFound)
 		return
 	}
 	storage.Guage[m.MetricName] = m.Guage
@@ -26,7 +26,7 @@ func HandleGuage(w http.ResponseWriter) {
 }
 func HandleCaunter(w http.ResponseWriter) {
 	if m.MetricName == "" {
-		http.Error(w, "", 400)
+		http.Error(w, "", http.StatusNotFound)
 		return
 	}
 	s := make(map[string][]int64)
@@ -51,7 +51,7 @@ func RequestHandle(w http.ResponseWriter, r *http.Request) {
 	case "gauge":
 		m.Guage, err = strconv.ParseFloat(arr[2], 64)
 		if err != nil {
-			http.Error(w, "", 400)
+			http.Error(w, "", http.StatusBadRequest)
 			return
 		}
 		HandleGuage(w)
@@ -59,13 +59,13 @@ func RequestHandle(w http.ResponseWriter, r *http.Request) {
 
 		m.Counter, err = strconv.ParseInt(arr[2], 10, 64)
 		if err != nil {
-			http.Error(w, "", 400)
+			http.Error(w, "", http.StatusBadRequest)
 			return
 		}
 		HandleCaunter(w)
 	default:
 
-		http.Error(w, "", 400)
+		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
 }
