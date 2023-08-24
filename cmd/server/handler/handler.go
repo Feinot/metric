@@ -48,6 +48,10 @@ func RequestHandle(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(sa)
 	m.MetricType = arr[0]
 	m.MetricName = arr[1]
+	if m.MetricName == "" {
+		http.Error(w, "", http.StatusNotFound)
+		return
+	}
 
 	switch m.MetricType {
 	case "gauge":
