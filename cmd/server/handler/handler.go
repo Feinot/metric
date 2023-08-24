@@ -38,7 +38,7 @@ func HandleCaunter(w http.ResponseWriter) {
 
 func RequestHandle(w http.ResponseWriter, r *http.Request) {
 	var err error
-	arr := make([]string, 3, 3)
+	arr := make([]string, 3)
 	url := strings.Split(r.URL.Path, "/update/")
 	url = strings.Split(url[1], "/")
 	fmt.Println(url)
