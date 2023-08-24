@@ -7,8 +7,7 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/update/counter/", handler.RequestHandle)
-	http.HandleFunc("/update/gauge/", handler.RequestHandle)
+	http.HandleFunc("/update", handler.RequestHandle)
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
