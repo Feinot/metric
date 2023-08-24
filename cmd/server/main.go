@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/update/counter", handler.RequestHandle)
+	http.HandleFunc("/update/counter/", handler.RequestHandle)
 	http.HandleFunc("/update/gauge", handler.RequestHandle)
 
 	fmt.Printf("Starting server for testing HTTP POST...\n")

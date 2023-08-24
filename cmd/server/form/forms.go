@@ -1,11 +1,12 @@
 package form
 
 type Metric struct {
-	MetricType  string `json:"MetricType"`
-	MetricName  string `json:"MetricName"`
-	MetricValue uint64 `json:"MetricValue"`
+	MetricType string `json:"MetricType"`
+	MetricName string `json:"MetricName"`
+	Guage      float64
+	Counter    int64
 }
 type MemStorage struct {
-	Guage   interface{}
-	Counter map[string][]interface{}
+	Guage   map[string]float64
+	Counter map[string][]int64
 }
