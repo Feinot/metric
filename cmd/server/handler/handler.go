@@ -14,10 +14,7 @@ type Metric form.Metric
 var m Metric
 
 func HandleGuage(w http.ResponseWriter) {
-	if m.MetricName == "" {
-		http.Error(w, "", http.StatusNotFound)
-		return
-	}
+
 	s := make(map[string]float64)
 	s[m.MetricName] = m.Guage
 	storage.Guage = s
@@ -25,10 +22,7 @@ func HandleGuage(w http.ResponseWriter) {
 
 }
 func HandleCaunter(w http.ResponseWriter) {
-	if m.MetricName == "" {
-		http.Error(w, "", http.StatusNotFound)
-		return
-	}
+
 	s := make(map[string][]int64)
 	s[m.MetricName] = append(storage.Counter[m.MetricName], m.Counter)
 	storage.Counter = s
