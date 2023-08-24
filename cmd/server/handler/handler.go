@@ -19,7 +19,9 @@ func HandleGuage(w http.ResponseWriter) {
 		http.Error(w, "", http.StatusNotFound)
 		return
 	}
-	storage.Guage[m.MetricName] = m.Guage
+	s := make(map[string]float64)
+	s[m.MetricName] = m.Guage
+	storage.Guage = s
 	fmt.Println("type = ", m.MetricType, " name = ", m.MetricName, " Value = ", m.Guage)
 	http.Error(w, "", 200)
 
