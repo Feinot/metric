@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/Feinot/metric/cmd/server/form"
 	"net/http"
 	"strconv"
@@ -22,7 +21,6 @@ func HandleGuage(w http.ResponseWriter) {
 	s := make(map[string]float64)
 	s[m.MetricName] = m.Guage
 	storage.Guage = s
-	fmt.Println("type = ", m.MetricType, " name = ", m.MetricName, " Value = ", m.Guage)
 	http.Error(w, "", 200)
 
 }
@@ -34,7 +32,6 @@ func HandleCaunter(w http.ResponseWriter) {
 	s := make(map[string][]int64)
 	s[m.MetricName] = append(storage.Counter[m.MetricName], m.Counter)
 	storage.Counter = s
-	fmt.Println("type = ", m.MetricType, " name = ", m.MetricName, " Value = ", m.Counter)
 	http.Error(w, "", 200)
 }
 
@@ -43,9 +40,9 @@ func RequestHandle(w http.ResponseWriter, r *http.Request) {
 	arr := make([]string, 3)
 	url := strings.Split(r.URL.Path, "/update/")
 	url = strings.Split(url[1], "/")
-	fmt.Println(url)
-	sa := copy(arr, url)
-	fmt.Println(sa)
+
+	copy(arr, url)
+
 	m.MetricType = arr[0]
 	m.MetricName = arr[1]
 	if m.MetricName == "" {
