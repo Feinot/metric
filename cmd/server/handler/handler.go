@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/Feinot/metric/forms"
 	"net/http"
 	"strconv"
@@ -19,7 +18,7 @@ func HandleGuage(w http.ResponseWriter) {
 	s := make(map[string]float64)
 	s[m.MetricName] = m.Guage
 	storage.Guage = s
-	fmt.Println(storage.Guage)
+
 	http.Error(w, "", 200)
 
 }
@@ -28,7 +27,7 @@ func HandleCaunter(w http.ResponseWriter) {
 	s := make(map[string][]int64)
 	s[m.MetricName] = append(storage.Counter[m.MetricName], m.Counter)
 	storage.Counter = s
-	fmt.Println(storage.Counter)
+
 	http.Error(w, "", 200)
 }
 
