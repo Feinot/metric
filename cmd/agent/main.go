@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	"fmt"
 	"github.com/Feinot/metric/forms"
 	"github.com/Feinot/metric/storage"
@@ -106,26 +104,26 @@ func GetMet() {
 }
 func MakeGURequest() {
 
-	client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
-
+	body, _ := client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
+	defer body.Body.Close()
 }
 func MakeCoRequest() {
 
-	client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
-
+	body, _ := client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
+	defer body.Body.Close()
 }
 func main() {
-	ctx, _ := context.WithCancel(context.Background())
-	go Interval(ctx)
+
+	go Interval()
 	select {}
 }
-func Interval(ctx context.Context) {
+func Interval() {
 	ticker := time.NewTicker(reportInterval)
 	tick := time.NewTicker(interval)
 
 	for {
 		select {
-		case <-ctx.Done():
+
 		case <-tick.C:
 			GetMet()
 		case <-ticker.C:

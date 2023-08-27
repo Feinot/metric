@@ -99,6 +99,7 @@ func TestMetric_HandleCaunter(t *testing.T) {
 			RequestHandle(w, request)
 
 			res := w.Result()
+			res.Body.Close()
 
 			assert.Equal(t, res.StatusCode, test.want.code)
 
