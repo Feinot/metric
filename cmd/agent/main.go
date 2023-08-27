@@ -106,13 +106,13 @@ func GetMet() {
 }
 func MakeGURequest() {
 
-	resp, err := client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
-	fmt.Println("error:", err, "  resp:", resp)
+	client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
+
 }
 func MakeCoRequest() {
 
-	resp, err := client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
-	fmt.Println("error:", err, "  resp:", resp)
+	client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
+
 }
 func main() {
 	ctx, _ := context.WithCancel(context.Background())
