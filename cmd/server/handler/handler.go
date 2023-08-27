@@ -1,65 +1,71 @@
 package handler
 
 import (
-	"encoding/json"
-	"github.com/Feinot/metric/cmd/server/Forms"
-	"github.com/Feinot/metric/cmd/server/storage"
-	"io/ioutil"
+	"fmt"
+	"github.com/Feinot/metric/forms"
 	"net/http"
-	"time"
+	"strconv"
+	"strings"
 )
 
-type Metric Forms.Metric
+var storage forms.MemStorage
+
+type Metric forms.Metric
 
 var m Metric
 
-func HandleGuage(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "", 400)
+func HandleGuage(w http.ResponseWriter) {
 
-	} else {
-		err = json.Unmarshal(body, &m)
-		if err != nil {
-
-			http.Error(w, "", http.StatusBadRequest)
-		}
-	}
-	if m.MetricName == "" && m.MetricType != "guage" {
-		http.Error(w, "gu", 404)
-
-		return
-	}
-	storage.Storage.Guage[m.MetricName] = m.MetricValue
-
-	http.Error(w, "gu", 200)
+	s := make(map[string]float64)
+	s[m.MetricName] = m.Guage
+	storage.Guage = s
+	fmt.Println(storage.Guage)
+	http.Error(w, "", 200)
 
 }
-func HandleCaunter(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "", 400)
-		return
+func HandleCaunter(w http.ResponseWriter) {
 
-	} else {
-		err = json.Unmarshal(body, &m)
+	s := make(map[string][]int64)
+	s[m.MetricName] = append(storage.Counter[m.MetricName], m.Counter)
+	storage.Counter = s
+	fmt.Println(storage.Counter)
+	http.Error(w, "", 200)
+}
+
+func RequestHandle(w http.ResponseWriter, r *http.Request) {
+	var err error
+	arr := make([]string, 3)
+	url := strings.Split(r.URL.Path, "/update/")
+	url = strings.Split(url[1], "/")
+
+	copy(arr, url)
+
+	m.MetricType = arr[0]
+	m.MetricName = arr[1]
+	if m.MetricName == "" {
+		http.Error(w, "", http.StatusNotFound)
+		return
+	}
+
+	switch m.MetricType {
+	case "gauge":
+		m.Guage, err = strconv.ParseFloat(arr[2], 64)
 		if err != nil {
 			http.Error(w, "", http.StatusBadRequest)
-
+			return
 		}
-	}
+		HandleGuage(w)
+	case "counter":
 
-	if m.MetricName == "" && m.MetricType != "caunter" {
-		http.Error(w, "", 400)
+		m.Counter, err = strconv.ParseInt(arr[2], 10, 64)
+		if err != nil {
+			http.Error(w, "", http.StatusBadRequest)
+			return
+		}
+		HandleCaunter(w)
+	default:
 
+		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
-	s := make(map[time.Time][]map[string][]Forms.Monitor)
-	q := make(map[string][]Forms.Monitor)
-	q[m.MetricName] = append(q[m.MetricName], m.MetricValue)
-
-	s[time.Now()] = append(storage.Storage.Counter[time.Now()], q)
-	storage.Storage.Counter = s
-
-	http.Error(w, "", 200)
 }

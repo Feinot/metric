@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
-	"strings"
+
 	"testing"
 )
 
@@ -14,7 +15,9 @@ func TestMetric_HandleCaunter(t *testing.T) {
 		contentType string
 		url         string
 		requestType string
-		metric      *strings.Reader
+		metricValue string
+		metricType  string
+		metricName  string
 	}
 	tests := []struct {
 		name string
@@ -25,10 +28,12 @@ func TestMetric_HandleCaunter(t *testing.T) {
 			want: want{
 				code:        200,
 				response:    `{"status":"ok"}`,
-				contentType: "application/json",
-				url:         "/update/counter",
+				contentType: "text/plain",
+				url:         "/update/",
 				requestType: "POST",
-				metric:      strings.NewReader(`{ "MetricType": "counter", "MetricName": "GOOS", "MetricValue": 123}`),
+				metricType:  "gauge/",
+				metricName:  "GOOS/",
+				metricValue: "123",
 			},
 		},
 		{
@@ -36,10 +41,12 @@ func TestMetric_HandleCaunter(t *testing.T) {
 			want: want{
 				code:        200,
 				response:    `{"status":"ok"}`,
-				contentType: "application/json",
-				url:         "/update/guage",
+				contentType: "text/plain",
+				url:         "/update/",
 				requestType: "POST",
-				metric:      strings.NewReader(`{ "MetricType": "counter", "MetricName": "GOOS", "MetricValue": 123}`),
+				metricType:  "counter/",
+				metricName:  "GOOS/",
+				metricValue: "123",
 			},
 		},
 		{
@@ -48,9 +55,11 @@ func TestMetric_HandleCaunter(t *testing.T) {
 				code: 400,
 
 				contentType: "application/json",
-				url:         "/update/counter",
+				url:         "/update/",
 				requestType: "POST",
-				metric:      strings.NewReader(`{ "MetricType": "asd", "MetricName": "GOOS", "MetricValue": 123}`),
+				metricType:  "uncown/",
+				metricName:  "GOOS/",
+				metricValue: "123",
 			},
 		},
 		{
@@ -59,31 +68,35 @@ func TestMetric_HandleCaunter(t *testing.T) {
 				code: 404,
 
 				contentType: "application/json",
-				url:         "/update/counter",
+				url:         "/update/",
 				requestType: "POST",
-				metric:      strings.NewReader(`{ "MetricType": "counter", "MetricName": "", "MetricValue": 123}`),
+				metricType:  "counter/",
+				metricName:  "/",
+				metricValue: "123",
 			},
 		},
 		{
 			name: "negative test #2",
 			want: want{
-				code: 404,
+				code: 400,
 
 				contentType: "application/json",
-				url:         "/update/counter",
+				url:         "/update/",
 				requestType: "POST",
-				metric:      strings.NewReader(`{ "MetricType": "counter", "MetricName": "", "MetricValue": }`),
+				metricType:  "counter/",
+				metricName:  "GOOS/",
+				metricValue: "",
 			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-
-			request := httptest.NewRequest(test.want.requestType, test.want.url, test.want.metric)
+			test.want.url = fmt.Sprintf("%s%s%s%s", test.want.url, test.want.metricType, test.want.metricName, test.want.metricValue)
+			request := httptest.NewRequest(test.want.requestType, test.want.url, nil)
 
 			w := httptest.NewRecorder()
-			HandleCaunter(w, request)
+			RequestHandle(w, request)
 
 			res := w.Result()
 
