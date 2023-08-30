@@ -110,6 +110,7 @@ func MakeGURequest() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(body.StatusCode)
 }
 func MakeCoRequest() {
 
@@ -118,6 +119,7 @@ func MakeCoRequest() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(body.StatusCode)
 }
 func main() {
 
