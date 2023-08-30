@@ -6,7 +6,6 @@ import (
 	"github.com/Feinot/metric/storage"
 	"github.com/gorilla/mux"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -43,7 +42,7 @@ func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "", http.StatusNotFound)
 			return
 		}
-		log.Println(m.MetricType, "  ", m.MetricName)
+
 		switch m.MetricType {
 		case "gauge":
 			m.Guage, err = strconv.ParseFloat(arr["value"], 64)
@@ -74,7 +73,7 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 		m.MetricType = arr["type"]
 		m.MetricName = arr["name"]
 		if m.MetricName == "" {
-			http.Error(w, arr["type"], http.StatusNotFound)
+			http.Error(w, "", http.StatusNotFound)
 			return
 		}
 		switch m.MetricType {
