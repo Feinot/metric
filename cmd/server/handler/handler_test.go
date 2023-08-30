@@ -96,7 +96,7 @@ func TestMetric_HandleCaunter(t *testing.T) {
 			request := httptest.NewRequest(test.want.requestType, test.want.url, nil)
 
 			w := httptest.NewRecorder()
-			RequestHandle(w, request)
+			RequestUpdateHandle(w, request)
 
 			res := w.Result()
 			res.Body.Close()

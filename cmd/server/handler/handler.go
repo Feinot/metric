@@ -1,13 +1,15 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/Feinot/metric/forms"
+	"github.com/Feinot/metric/storage"
+	"github.com/gorilla/mux"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
-	"strings"
 )
-
-var storage forms.MemStorage
 
 type Metric forms.Metric
 
@@ -17,54 +19,110 @@ func HandleGuage(w http.ResponseWriter) {
 
 	s := make(map[string]float64)
 	s[m.MetricName] = m.Guage
-	storage.Guage = s
-
+	storage.Storage.Guage = s
 	http.Error(w, "", 200)
 
 }
 func HandleCaunter(w http.ResponseWriter) {
 
 	s := make(map[string][]int64)
-	s[m.MetricName] = append(storage.Counter[m.MetricName], m.Counter)
-	storage.Counter = s
-
+	s[m.MetricName] = append(storage.Storage.Counter[m.MetricName], m.Counter)
+	storage.Storage.Counter = s
 	http.Error(w, "", 200)
 }
 
-func RequestHandle(w http.ResponseWriter, r *http.Request) {
-	var err error
-	arr := make([]string, 3)
-	url := strings.Split(r.URL.Path, "/update/")
-	url = strings.Split(url[1], "/")
+func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
 
-	copy(arr, url)
+		var err error
+		arr := mux.Vars(r)
+		m.MetricType = arr["type"]
+		m.MetricName = arr["name"]
+		if m.MetricName == "" {
+			http.Error(w, "", http.StatusNotFound)
+			return
+		}
+		log.Println(m.MetricType, "  ", m.MetricName)
+		switch m.MetricType {
+		case "gauge":
+			m.Guage, err = strconv.ParseFloat(arr["value"], 64)
+			if err != nil {
+				http.Error(w, "", http.StatusBadRequest)
+				return
+			}
+			HandleGuage(w)
+		case "counter":
 
-	m.MetricType = arr[0]
-	m.MetricName = arr[1]
-	if m.MetricName == "" {
-		http.Error(w, "", http.StatusNotFound)
-		return
+			m.Counter, err = strconv.ParseInt(arr["value"], 10, 64)
+			if err != nil {
+				http.Error(w, "", http.StatusBadRequest)
+				return
+			}
+			HandleCaunter(w)
+		default:
+
+			http.Error(w, "", http.StatusBadRequest)
+			return
+		}
 	}
-
-	switch m.MetricType {
-	case "gauge":
-		m.Guage, err = strconv.ParseFloat(arr[2], 64)
-		if err != nil {
-			http.Error(w, "", http.StatusBadRequest)
+}
+func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		arr := mux.Vars(r)
+		m.MetricType = arr["type"]
+		m.MetricName = arr["name"]
+		if m.MetricName == "" {
+			http.Error(w, arr["type"], http.StatusNotFound)
 			return
 		}
-		HandleGuage(w)
-	case "counter":
+		switch m.MetricType {
+		case "gauge":
+			q := storage.Storage.Guage[m.MetricName]
+			if q == 0 {
+				http.Error(w, "", http.StatusNotFound)
+				return
+			}
+			fmt.Fprintf(w, strconv.FormatFloat(q, 'f', 6, 64))
+			http.Error(w, "", http.StatusOK)
+		case "counter":
+			q := storage.Storage.Counter[m.MetricName]
+			if len(q) == 0 {
+				http.Error(w, "", http.StatusNotFound)
+				return
 
-		m.Counter, err = strconv.ParseInt(arr[2], 10, 64)
-		if err != nil {
-			http.Error(w, "", http.StatusBadRequest)
+			}
+			str := strconv.FormatInt(q[0], 10)
+			for i := 1; i < len(q); i++ {
+
+				str += "," + strconv.FormatInt(q[i], 10)
+			}
+
+			fmt.Fprintf(w, str)
+			http.Error(w, "", http.StatusOK)
+		default:
+			http.Error(w, "", http.StatusNotFound)
 			return
 		}
-		HandleCaunter(w)
-	default:
+	case http.MethodPost:
 
-		http.Error(w, "", http.StatusBadRequest)
 		return
+
+	}
+}
+func HomeHandle(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		tmpl := template.Must(template.New("storage.Storage").Parse(`<div>
+            <h1>Guage</h1>
+			<p1>{{ .Guage}}</p>
+			<h1>Counter</h1>
+            <p>{{ .Counter}}</p>
+        </div>`))
+		tmpl.Execute(w, storage.Storage)
+
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
