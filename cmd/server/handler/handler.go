@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/Feinot/metric/forms"
 	"github.com/Feinot/metric/storage"
 	"github.com/gorilla/mux"
@@ -83,8 +82,8 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "", http.StatusNotFound)
 				return
 			}
-			fmt.Fprintf(w, strconv.FormatFloat(q, 'f', 6, 64))
-			http.Error(w, "", http.StatusOK)
+
+			http.Error(w, "strconv.FormatFloat(q, 'f', 6, 64)", http.StatusOK)
 		case "counter":
 			q := storage.Storage.Counter[m.MetricName]
 			if len(q) == 0 {
@@ -98,8 +97,7 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 				str += "," + strconv.FormatInt(q[i], 10)
 			}
 
-			fmt.Fprintf(w, str)
-			http.Error(w, "", http.StatusOK)
+			http.Error(w, str, http.StatusOK)
 		default:
 			http.Error(w, "", http.StatusNotFound)
 			return
