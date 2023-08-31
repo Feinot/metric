@@ -103,7 +103,6 @@ func TestMetric_HandleCaunter(t *testing.T) {
 			//test.want.url = fmt.Sprintf("%s%s%s%s", test.want.url, test.want.metricType, test.want.metricName, test.want.metricValue)
 
 			res, _ := client.Post(fmt.Sprintf("%s%s%s%s%s", "http://localhost:8080", test.want.url, test.want.metricType, test.want.metricName, test.want.metricValue), "text/plain", nil)
-			fmt.Println(fmt.Sprintf("%s%s%s%s%s", "http://localhost:8080", test.want.url, test.want.metricType, test.want.metricName, test.want.metricValue))
 			res.Body.Close()
 
 			assert.Equal(t, res.StatusCode, test.want.code)
