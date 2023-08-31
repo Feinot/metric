@@ -103,7 +103,7 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	case http.MethodPost:
-
+		http.Error(w, "", http.StatusMethodNotAllowed)
 		return
 
 	}
@@ -120,6 +120,6 @@ func HomeHandle(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(w, storage.Storage)
 
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "", http.StatusMethodNotAllowed)
 	}
 }

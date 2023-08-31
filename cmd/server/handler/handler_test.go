@@ -3,10 +3,16 @@ package handler
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"net/http/httptest"
-
+	"net/http"
 	"testing"
 )
+
+var client = &http.Client{
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+
+		return nil
+	},
+}
 
 func TestMetric_HandleCaunter(t *testing.T) {
 	type want struct {
@@ -36,11 +42,12 @@ func TestMetric_HandleCaunter(t *testing.T) {
 				metricValue: "123",
 			},
 		},
+
 		{
 			name: "positive test #2",
 			want: want{
-				code:        200,
-				response:    `{"status":"ok"}`,
+				code: 200,
+				//response:    `{"status":"ok"}`,
 				contentType: "text/plain",
 				url:         "/update/",
 				requestType: "POST",
@@ -49,6 +56,7 @@ func TestMetric_HandleCaunter(t *testing.T) {
 				metricValue: "123",
 			},
 		},
+
 		{
 			name: "negative test #1",
 			want: want{
@@ -85,20 +93,17 @@ func TestMetric_HandleCaunter(t *testing.T) {
 				requestType: "POST",
 				metricType:  "counter/",
 				metricName:  "GOOS/",
-				metricValue: "",
+				metricValue: " ",
 			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			test.want.url = fmt.Sprintf("%s%s%s%s", test.want.url, test.want.metricType, test.want.metricName, test.want.metricValue)
-			request := httptest.NewRequest(test.want.requestType, test.want.url, nil)
+			//test.want.url = fmt.Sprintf("%s%s%s%s", test.want.url, test.want.metricType, test.want.metricName, test.want.metricValue)
 
-			w := httptest.NewRecorder()
-			RequestUpdateHandle(w, request)
-
-			res := w.Result()
+			res, _ := client.Post(fmt.Sprintf("%s%s%s%s%s", "http://localhost:8080", test.want.url, test.want.metricType, test.want.metricName, test.want.metricValue), "text/plain", nil)
+			fmt.Println(fmt.Sprintf("%s%s%s%s%s", "http://localhost:8080", test.want.url, test.want.metricType, test.want.metricName, test.want.metricValue))
 			res.Body.Close()
 
 			assert.Equal(t, res.StatusCode, test.want.code)
