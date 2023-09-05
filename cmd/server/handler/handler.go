@@ -24,6 +24,7 @@ func HandleGuage(w http.ResponseWriter) {
 }
 func HandleCaunter(w http.ResponseWriter) {
 	s := make(map[string]int64)
+	s = storage.Storage.Counter
 	s[m.MetricName] += m.Counter
 
 	storage.Storage.Counter = s
@@ -103,7 +104,7 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			s := strconv.FormatFloat(q, 'f', 6, 64)
-			http.Error(w, s[:len(s)-4], http.StatusOK)
+			http.Error(w, s[:len(s)-3], http.StatusOK)
 		case "counter":
 			q := storage.Storage.Counter[m.MetricName]
 			if q == 0 {
