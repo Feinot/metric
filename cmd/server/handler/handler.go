@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/Feinot/metric/forms"
 	"github.com/Feinot/metric/storage"
 	"html/template"
@@ -52,7 +53,7 @@ func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
 				url = strings.Split(url[2], "\n")
 				m.Guage, err = strconv.ParseFloat(url[0], 64)
 				if err != nil {
-
+					fmt.Print(err)
 					w.WriteHeader(http.StatusBadRequest)
 					return
 				}
@@ -62,9 +63,10 @@ func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
 
 		case "counter":
 			if len(url) > 2 {
-
-				m.Counter, err = strconv.ParseInt(arr[0], 10, 64)
+				url = strings.Split(url[2], "\n")
+				m.Counter, err = strconv.ParseInt(url[0], 10, 64)
 				if err != nil {
+					fmt.Print(err)
 					w.WriteHeader(http.StatusBadRequest)
 					return
 				}
