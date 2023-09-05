@@ -23,8 +23,10 @@ func HandleGuage(w http.ResponseWriter) {
 
 }
 func HandleCaunter(w http.ResponseWriter) {
+	s := make(map[string]int64)
+	s[m.MetricName] += m.Counter
 
-	storage.Storage.Counter[m.MetricName] += m.Counter
+	storage.Storage.Counter = s
 	w.WriteHeader(200)
 }
 
