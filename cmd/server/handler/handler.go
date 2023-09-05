@@ -62,7 +62,7 @@ func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
 
 		case "counter":
 			if len(url) > 2 {
-				url = strings.Split(url[2], "\n")
+
 				m.Counter, err = strconv.ParseInt(arr[0], 10, 64)
 				if err != nil {
 					w.WriteHeader(http.StatusBadRequest)
