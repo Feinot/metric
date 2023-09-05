@@ -24,9 +24,7 @@ func HandleGuage(w http.ResponseWriter) {
 }
 func HandleCaunter(w http.ResponseWriter) {
 
-	s := make(map[string][]int64)
-	s[m.MetricName] = append(storage.Storage.Counter[m.MetricName], m.Counter)
-	storage.Storage.Counter = s
+	storage.Storage.Counter[m.MetricName] += m.Counter
 	w.WriteHeader(200)
 }
 
@@ -52,6 +50,7 @@ func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
 			if len(url) > 2 {
 				url = strings.Split(url[2], "\n")
 				m.Guage, err = strconv.ParseFloat(url[0], 64)
+				fmt.Println(m.Guage)
 				if err != nil {
 					fmt.Print(err)
 					w.WriteHeader(http.StatusBadRequest)
@@ -101,20 +100,16 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "", http.StatusNotFound)
 				return
 			}
-
-			http.Error(w, strconv.FormatFloat(q, 'f', 6, 64), http.StatusOK)
+			s := strconv.FormatFloat(q, 'f', 6, 64)
+			http.Error(w, s[:len(s)-4], http.StatusOK)
 		case "counter":
 			q := storage.Storage.Counter[m.MetricName]
-			if len(q) == 0 {
+			if q == 0 {
 				http.Error(w, "", http.StatusNotFound)
 				return
 
 			}
-			str := strconv.FormatInt(q[0], 10)
-			for i := 1; i < len(q); i++ {
-
-				str += "," + strconv.FormatInt(q[i], 10)
-			}
+			str := strconv.FormatInt(q, 10)
 
 			http.Error(w, str, http.StatusOK)
 		default:
