@@ -3,10 +3,10 @@ package handler
 import (
 	"github.com/Feinot/metric/forms"
 	"github.com/Feinot/metric/storage"
-	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Metric forms.Metric
@@ -18,7 +18,7 @@ func HandleGuage(w http.ResponseWriter) {
 	s := make(map[string]float64)
 	s[m.MetricName] = m.Guage
 	storage.Storage.Guage = s
-	http.Error(w, "", 200)
+	w.WriteHeader(200)
 
 }
 func HandleCaunter(w http.ResponseWriter) {
@@ -26,17 +26,21 @@ func HandleCaunter(w http.ResponseWriter) {
 	s := make(map[string][]int64)
 	s[m.MetricName] = append(storage.Storage.Counter[m.MetricName], m.Counter)
 	storage.Storage.Counter = s
-	http.Error(w, "", 200)
+	w.WriteHeader(200)
 }
 
 func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
-
 		var err error
-		arr := mux.Vars(r)
-		m.MetricType = arr["type"]
-		m.MetricName = arr["name"]
+		arr := make([]string, 3)
+		url := strings.Split(r.URL.Path, "/update/")
+		url = strings.Split(url[1], "/")
+
+		copy(arr, url)
+
+		m.MetricType = url[0]
+		m.MetricName = url[1]
 		if m.MetricName == "" {
 			http.Error(w, "", http.StatusNotFound)
 			return
@@ -44,23 +48,31 @@ func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
 
 		switch m.MetricType {
 		case "gauge":
-			m.Guage, err = strconv.ParseFloat(arr["value"], 64)
-			if err != nil {
-				http.Error(w, "", http.StatusBadRequest)
-				return
-			}
-			HandleGuage(w)
-		case "counter":
+			if len(url) > 2 {
+				url = strings.Split(url[2], "\n")
+				m.Guage, err = strconv.ParseFloat(url[0], 64)
+				if err != nil {
 
-			m.Counter, err = strconv.ParseInt(arr["value"], 10, 64)
-			if err != nil {
-				http.Error(w, "", http.StatusBadRequest)
-				return
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+				HandleGuage(w)
+
+			}
+
+		case "counter":
+			if len(url) > 2 {
+				url = strings.Split(url[2], "\n")
+				m.Counter, err = strconv.ParseInt(arr[0], 10, 64)
+				if err != nil {
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
 			}
 			HandleCaunter(w)
 		default:
 
-			http.Error(w, "", http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 	}
@@ -68,9 +80,14 @@ func RequestUpdateHandle(w http.ResponseWriter, r *http.Request) {
 func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		arr := mux.Vars(r)
-		m.MetricType = arr["type"]
-		m.MetricName = arr["name"]
+
+		arr := make([]string, 3)
+		url := strings.Split(r.URL.Path, "/value/")
+		url = strings.Split(url[1], "/")
+
+		copy(arr, url)
+		m.MetricType = arr[0]
+		m.MetricName = arr[1]
 		if m.MetricName == "" {
 			http.Error(w, "", http.StatusNotFound)
 			return
@@ -83,7 +100,7 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			http.Error(w, "strconv.FormatFloat(q, 'f', 6, 64)", http.StatusOK)
+			http.Error(w, strconv.FormatFloat(q, 'f', 6, 64), http.StatusOK)
 		case "counter":
 			q := storage.Storage.Counter[m.MetricName]
 			if len(q) == 0 {

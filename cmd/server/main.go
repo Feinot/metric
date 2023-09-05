@@ -2,17 +2,23 @@ package main
 
 import (
 	"github.com/Feinot/metric/cmd/server/handler"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 )
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/update/{type}/{name}/{value}", handler.RequestUpdateHandle)
-	r.HandleFunc("/value/", handler.RequestValueHandle)
 
-	r.HandleFunc("/", handler.HomeHandle)
+	Server()
+}
+func Server() {
+	r := chi.NewRouter()
+
+	r.Post("/update/{type}/{name}/{value}", handler.RequestUpdateHandle)
+
+	r.Get("/value/{type}/{name}", handler.RequestValueHandle)
+
+	r.Get("/", handler.HomeHandle)
 
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatal(err)
