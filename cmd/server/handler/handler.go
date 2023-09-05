@@ -26,12 +26,12 @@ func HandleCaunter(w http.ResponseWriter) {
 	s := make(map[string]int64)
 
 	if storage.Storage.Counter[m.MetricName] != 0 {
-		storage.Storage.Counter[m.MetricName] += m.Counter
+		s[m.MetricName] = storage.Storage.Counter[m.MetricName] + m.Counter
 
 	} else {
-		storage.Storage.Counter[m.MetricName] = m.Counter
+		s[m.MetricName] = m.Counter
 	}
-
+	storage.Storage.Counter = s
 	w.WriteHeader(200)
 }
 
