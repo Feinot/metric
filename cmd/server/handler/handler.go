@@ -24,7 +24,7 @@ func HandleGuage(w http.ResponseWriter) {
 }
 func HandleCaunter(w http.ResponseWriter) {
 	s := make(map[string]int64)
-	s = storage.Storage.Counter
+
 	if s[m.MetricName] != 0 {
 		s[m.MetricName] += m.Counter
 
