@@ -106,7 +106,7 @@ func GetMet() {
 }
 func MakeGURequest(host *string) {
 
-	body, err := client.Post(fmt.Sprintf("%s%s%s%v", *host, "/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
+	body, err := client.Post(fmt.Sprintf("%s%s%s%s%v", *host, "/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
 
 	if err != nil {
 		log.Fatal(err)
@@ -116,7 +116,7 @@ func MakeGURequest(host *string) {
 }
 func MakeCoRequest(host *string) {
 
-	body, err := client.Post(fmt.Sprintf("%s%s%s%v", *host, "/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
+	body, err := client.Post(fmt.Sprintf("%s%s%s%s%v", *host, "/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
 
 	if err != nil {
 		log.Fatal(err)

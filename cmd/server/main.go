@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/Feinot/metric/cmd/server/handler"
 	"github.com/go-chi/chi/v5"
 	"log"
@@ -26,7 +25,7 @@ func Server() {
 	flag.Parse()
 
 	r := chi.NewRouter()
-	fmt.Println(*host)
+
 	r.Post("/update/{type}/{name}/{value}", handler.RequestUpdateHandle)
 
 	r.Get("/value/{type}/{name}", handler.RequestValueHandle)
