@@ -104,9 +104,9 @@ func GetMet() {
 	storage.M.RandomValue.MName = "RandomValue"
 
 }
-func MakeGURequest(host *string) {
+func MakeGURequest(host string) {
 
-	body, err := client.Post(fmt.Sprintf("%s%s%s%s%v", *host, "/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
+	body, err := client.Post(fmt.Sprintf("%s%s%s%s%v", host, "/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
 
 	if err != nil {
 		log.Fatal(err)
@@ -114,9 +114,9 @@ func MakeGURequest(host *string) {
 	defer body.Body.Close()
 
 }
-func MakeCoRequest(host *string) {
+func MakeCoRequest(host string) {
 
-	body, err := client.Post(fmt.Sprintf("%s%s%s%s%v", *host, "/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
+	body, err := client.Post(fmt.Sprintf("%s%s%s%s%v", host, "/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
 
 	if err != nil {
 		log.Fatal(err)
@@ -126,14 +126,14 @@ func MakeCoRequest(host *string) {
 }
 func main() {
 
-	host := flag.String("a", "http://localhost:8080", "")
+	host := "http://" + *flag.String("a", "localhost:8080", "")
 	interval = *flag.Duration("p", time.Duration(10)*time.Second, "")
 	reportInterval = *flag.Duration("r", time.Duration(2)*time.Second, "")
 	flag.Parse()
 	go Interval(host)
 	select {}
 }
-func Interval(host *string) {
+func Interval(host string) {
 	ticker := time.NewTicker(reportInterval)
 	tick := time.NewTicker(interval)
 

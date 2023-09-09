@@ -2,14 +2,16 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/Feinot/metric/cmd/server/handler"
 	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
+	"strings"
 )
 
 var (
-	host *string
+	host string
 )
 
 func init() {
@@ -21,9 +23,11 @@ func main() {
 	Server()
 }
 func Server() {
-	host = flag.String("a", ":8080", "")
-	flag.Parse()
+	flag.StringVar(&host, "a", ":8080", "")
 
+	flag.Parse()
+	q := strings.Split(host, "localhost")
+	fmt.Println(q)
 	r := chi.NewRouter()
 
 	r.Post("/update/{type}/{name}/{value}", handler.RequestUpdateHandle)
@@ -32,7 +36,7 @@ func Server() {
 
 	r.Get("/", handler.HomeHandle)
 
-	if err := http.ListenAndServe(*host, r); err != nil {
+	if err := http.ListenAndServe(q[1], r); err != nil {
 		log.Fatal(err)
 	}
 }
