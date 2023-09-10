@@ -28,6 +28,7 @@ var client = &http.Client{
 	},
 }
 var (
+	host           string
 	Poll           int
 	Met            Metric
 	Sum            sum
@@ -126,10 +127,12 @@ func MakeCoRequest(host string) {
 }
 func main() {
 
-	host := "http://" + *flag.String("a", "localhost:8080", "")
-	interval = *flag.Duration("p", time.Duration(10)*time.Second, "")
-	reportInterval = *flag.Duration("r", time.Duration(2)*time.Second, "")
+	flag.StringVar(&host, "a", "localhost:8080", "")
+	flag.DurationVar(&reportInterval, "p", time.Duration(10)*time.Second, "")
+	flag.DurationVar(&interval, "r", time.Duration(2)*time.Second, "")
+
 	flag.Parse()
+	host = "http://" + host
 	go Interval(host)
 	select {}
 }
