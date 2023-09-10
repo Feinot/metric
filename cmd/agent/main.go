@@ -126,11 +126,12 @@ func MakeCoRequest(host string) {
 
 }
 func main() {
-
+	var p, r int
 	flag.StringVar(&host, "a", "localhost:8080", "")
-	flag.DurationVar(&reportInterval, "p", time.Duration(10)*time.Second, "")
-	flag.DurationVar(&interval, "r", time.Duration(2)*time.Second, "")
-
+	flag.IntVar(&p, "p", 10, "")
+	flag.IntVar(&r, "r", 2, "")
+	reportInterval = time.Duration(p) * time.Second
+	interval = time.Duration(r) * time.Second
 	flag.Parse()
 	host = "http://" + host
 	go Interval(host)
