@@ -14,7 +14,6 @@ require (
 	github.com/gookit/rux v1.4.0 // indirect
 	github.com/gookit/validate v1.5.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/monoculum/formam v3.5.5+incompatible // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
