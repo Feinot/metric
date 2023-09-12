@@ -118,7 +118,7 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 			}
 			str := strconv.FormatInt(q, 10)
 
-			http.Error(w, str, http.StatusOK)
+			http.Error(w, str[:len(str)-4], http.StatusOK)
 		default:
 			http.Error(w, "", http.StatusNotFound)
 			return
