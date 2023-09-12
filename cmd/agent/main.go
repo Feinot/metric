@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/Feinot/metric/forms"
 	"github.com/Feinot/metric/storage"
-	"github.com/joho/godotenv"
 	"log"
 	"math/rand"
 	"net/http"
@@ -130,10 +129,7 @@ func MakeCoRequest(host string) {
 
 }
 func GetConfigHost() string {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Printf("Some error occured. Err: %s", err)
-	}
+
 	if os.Getenv("ADDRESS") != "" {
 		return os.Getenv("ADDRESS")
 	}
@@ -143,10 +139,6 @@ func GetConfigHost() string {
 	return host
 }
 func GetConfigReport() int {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Printf("Some error occured. Err: %s", err)
-	}
 
 	intrv, err := strconv.Atoi(os.Getenv("REPORT_INTERVA"))
 	if err == nil {
@@ -158,10 +150,6 @@ func GetConfigReport() int {
 	return p
 }
 func GetConfigPool() int {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Printf("Some error occured. Err: %s", err)
-	}
 
 	intrv, err := strconv.Atoi(os.Getenv("POLL_INTERVAL"))
 	if err == nil {

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"github.com/Feinot/metric/cmd/server/handler"
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
@@ -24,10 +23,7 @@ func main() {
 	Server()
 }
 func GetConfig() []string {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Printf("Some error occured. Err: %s", err)
-	}
+
 	if os.Getenv("ADDRESS") != "" {
 		return strings.Split(os.Getenv("ADDRESS"), "localhost")
 	}
