@@ -132,7 +132,7 @@ func MakeCoRequest(host string) {
 func GetConfigHost() string {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Some error occured. Err: %s", err)
+		log.Printf("Some error occured. Err: %s", err)
 	}
 	if os.Getenv("ADDRESS") != "" {
 		return os.Getenv("ADDRESS")

@@ -26,7 +26,7 @@ func main() {
 func GetConfig() []string {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Some error occured. Err: %s", err)
+		log.Printf("Some error occured. Err: %s", err)
 	}
 	if os.Getenv("ADDRESS") != "" {
 		return strings.Split(os.Getenv("ADDRESS"), "localhost")
