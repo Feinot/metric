@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/Feinot/metric/forms"
 	"github.com/Feinot/metric/storage"
@@ -28,7 +27,6 @@ var client = &http.Client{
 	},
 }
 var (
-	host           string
 	Poll           int
 	Met            Metric
 	Sum            sum
@@ -105,9 +103,9 @@ func GetMet() {
 	storage.M.RandomValue.MName = "RandomValue"
 
 }
-func MakeGURequest(host string) {
+func MakeGURequest() {
 
-	body, err := client.Post(fmt.Sprintf("%s%s%s%s%v", host, "/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
+	body, err := client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/gauge/", storage.M.RandomValue.MName, "/", storage.M.RandomValue.Value), "text/plain", nil)
 
 	if err != nil {
 		log.Fatal(err)
@@ -115,9 +113,9 @@ func MakeGURequest(host string) {
 	defer body.Body.Close()
 
 }
-func MakeCoRequest(host string) {
+func MakeCoRequest() {
 
-	body, err := client.Post(fmt.Sprintf("%s%s%s%s%v", host, "/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
+	body, err := client.Post(fmt.Sprintf("%s%s%s%v", "http://localhost:8080/update/counter/", storage.M.PollCount.MName, "/", storage.M.PollCount.Value), "text/plain", nil)
 
 	if err != nil {
 		log.Fatal(err)
@@ -126,18 +124,11 @@ func MakeCoRequest(host string) {
 
 }
 func main() {
-	var p, r int
-	flag.StringVar(&host, "a", "localhost:8080", "")
-	flag.IntVar(&p, "p", 10, "")
-	flag.IntVar(&r, "r", 2, "")
-	reportInterval = time.Duration(p) * time.Second
-	interval = time.Duration(r) * time.Second
-	flag.Parse()
-	host = "http://" + host
-	go Interval(host)
+
+	go Interval()
 	select {}
 }
-func Interval(host string) {
+func Interval() {
 	ticker := time.NewTicker(reportInterval)
 	tick := time.NewTicker(interval)
 
@@ -147,8 +138,8 @@ func Interval(host string) {
 		case <-tick.C:
 			GetMet()
 		case <-ticker.C:
-			MakeGURequest(host)
-			MakeCoRequest(host)
+			MakeGURequest()
+			MakeCoRequest()
 
 		}
 	}
