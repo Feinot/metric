@@ -128,46 +128,44 @@ func MakeCoRequest(host string) {
 	defer body.Body.Close()
 
 }
-func GetConfigHost() string {
+func GetConfigHost() {
 
 	if os.Getenv("ADDRESS") != "" {
-		return os.Getenv("ADDRESS")
+		host = os.Getenv("ADDRESS")
 	}
-	flag.StringVar(&host, "a", "localhost:8080", "")
 
-	flag.Parse()
-	return host
 }
-func GetConfigReport() int {
+func GetConfigReport() {
 
 	intrv, err := strconv.Atoi(os.Getenv("REPORT_INTERVA"))
 	if err == nil {
-		return intrv
+		p = intrv
 	}
-	flag.IntVar(&p, "p", 10, "")
 
 	flag.Parse()
-	return p
+
 }
-func GetConfigPool() int {
+func GetConfigPool() {
 
 	intrv, err := strconv.Atoi(os.Getenv("POLL_INTERVAL"))
 	if err == nil {
-		return intrv
+		r = intrv
 	}
-	flag.IntVar(&r, "r", 2, "")
 
-	flag.Parse()
-	return p
 }
 func main() {
-	p = GetConfigReport()
-	host = GetConfigHost()
-	r = GetConfigPool()
+	flag.IntVar(&r, "r", 2, "")
+	flag.IntVar(&p, "p", 10, "")
+	flag.StringVar(&host, "a", "localhost:8080", "")
+	GetConfigHost()
+	GetConfigReport()
+
+	GetConfigPool()
+	flag.Parse()
 
 	reportInterval = time.Duration(p) * time.Second
 	interval = time.Duration(r) * time.Second
-	flag.Parse()
+
 	host = "http://" + host
 	go Interval(host)
 	select {}
