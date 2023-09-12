@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"github.com/Feinot/metric/forms"
 	"github.com/Feinot/metric/storage"
+	"github.com/joho/godotenv"
 	"log"
-
 	"math/rand"
 	"net/http"
+	"os"
 	"runtime"
+	"strconv"
 
 	"sync"
 	"time"
@@ -28,12 +30,14 @@ var client = &http.Client{
 	},
 }
 var (
+	p, r           int
 	host           string
 	Poll           int
 	Met            Metric
 	Sum            sum
 	reportInterval = time.Duration(10) * time.Second
-	interval       = time.Duration(2) * time.Second
+
+	interval = time.Duration(2) * time.Second
 )
 
 func GetMet() {
@@ -125,11 +129,54 @@ func MakeCoRequest(host string) {
 	defer body.Body.Close()
 
 }
-func main() {
-	var p, r int
+func GetConfigHost() string {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+	if os.Getenv("ADDRESS") != "" {
+		return os.Getenv("ADDRESS")
+	}
 	flag.StringVar(&host, "a", "localhost:8080", "")
+
+	flag.Parse()
+	return host
+}
+func GetConfigReport() int {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+
+	intrv, err := strconv.Atoi(os.Getenv("REPORT_INTERVA"))
+	if err == nil {
+		return intrv
+	}
 	flag.IntVar(&p, "p", 10, "")
+
+	flag.Parse()
+	return p
+}
+func GetConfigPool() int {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+
+	intrv, err := strconv.Atoi(os.Getenv("POLL_INTERVAL"))
+	if err == nil {
+		return intrv
+	}
 	flag.IntVar(&r, "r", 2, "")
+
+	flag.Parse()
+	return p
+}
+func main() {
+	p = GetConfigReport()
+	host = GetConfigHost()
+	r = GetConfigPool()
+
 	reportInterval = time.Duration(p) * time.Second
 	interval = time.Duration(r) * time.Second
 	flag.Parse()
