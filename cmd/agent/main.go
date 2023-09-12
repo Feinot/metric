@@ -145,7 +145,7 @@ func GetConfigHost() string {
 func GetConfigReport() int {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Some error occured. Err: %s", err)
+		log.Printf("Some error occured. Err: %s", err)
 	}
 
 	intrv, err := strconv.Atoi(os.Getenv("REPORT_INTERVA"))
@@ -160,7 +160,7 @@ func GetConfigReport() int {
 func GetConfigPool() int {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Some error occured. Err: %s", err)
+		log.Printf("Some error occured. Err: %s", err)
 	}
 
 	intrv, err := strconv.Atoi(os.Getenv("POLL_INTERVAL"))
