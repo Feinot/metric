@@ -108,7 +108,7 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			s := strconv.FormatFloat(q, 'f', 6, 64)
-			http.Error(w, s, http.StatusOK)
+			http.Error(w, s[:len(s)-4], http.StatusOK)
 		case "counter":
 			q := storage.Storage.Counter[m.MetricName]
 			if q == 0 {
@@ -118,7 +118,7 @@ func RequestValueHandle(w http.ResponseWriter, r *http.Request) {
 			}
 			str := strconv.FormatInt(q, 10)
 
-			http.Error(w, str[:len(str)-4], http.StatusOK)
+			http.Error(w, str, http.StatusOK)
 		default:
 			http.Error(w, "", http.StatusNotFound)
 			return
